@@ -1,0 +1,340 @@
+@import "@fontsource/pixelify-sans/400.css";
+@import "@fontsource/pixelify-sans/600.css";
+@import "@fontsource/pixelify-sans/700.css";
+
+/* Block World GUI: original pixel-styled chrome in the spirit of classic block
+   games (bevelled grey panels, inset slots, chunky buttons, purple tooltips). */
+
+.jc {
+  --jc-panel: #c6c6c6;
+  --jc-panel-hi: #ffffff;
+  --jc-panel-lo: #555555;
+  --jc-ink: #3f3f3f;
+  --jc-slot: #8b8b8b;
+  --jc-slot-hi: #ffffff;
+  --jc-slot-lo: #373737;
+  --jc-btn: #727272;
+  --jc-btn-hover: #8a91c4;
+  --jc-shadow: #3f3f3f;
+  --jc-gold: #fcd34d;
+  --jc-green: #7cfc3c;
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #000;
+  color: #fff;
+  font-family: "Pixelify Sans", ui-monospace, monospace;
+  -webkit-font-smoothing: none;
+  user-select: none;
+  touch-action: none;
+}
+.jc canvas {
+  display: block;
+  image-rendering: pixelated;
+}
+.jc :focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+
+.jc-text-shadow {
+  text-shadow: 2px 2px 0 var(--jc-shadow);
+}
+
+/* ---------------------------------------------------------- panels & slots */
+.jc-panel {
+  background: var(--jc-panel);
+  color: var(--jc-ink);
+  border: 3px solid #000;
+  border-radius: 6px;
+  box-shadow:
+    inset 3px 3px 0 var(--jc-panel-hi),
+    inset -3px -3px 0 var(--jc-panel-lo);
+  padding: 14px 16px 16px;
+}
+.jc-panel h2,
+.jc-panel h3 {
+  font-weight: 600;
+  color: var(--jc-ink);
+}
+.jc-slot {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  background: var(--jc-slot);
+  box-shadow:
+    inset 2px 2px 0 var(--jc-slot-lo),
+    inset -2px -2px 0 var(--jc-slot-hi);
+  cursor: pointer;
+}
+.jc-slot img {
+  width: 32px;
+  height: 32px;
+  image-rendering: pixelated;
+}
+.jc-slot:hover,
+.jc-slot:focus-visible,
+.jc-slot[aria-pressed="true"] {
+  background: #a9a9a9;
+}
+.jc-slot.is-empty {
+  cursor: default;
+}
+
+/* ---------------------------------------------------------- buttons */
+.jc-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 14px;
+  background: var(--jc-btn);
+  color: #fff;
+  font: 500 17px "Pixelify Sans", monospace;
+  text-shadow: 2px 2px 0 var(--jc-shadow);
+  border: 2px solid #000;
+  box-shadow:
+    inset 2px 2px 0 #a8a8a8,
+    inset -2px -3px 0 #4a4a4a;
+  cursor: pointer;
+}
+.jc-btn:hover,
+.jc-btn:focus-visible {
+  background: var(--jc-btn-hover);
+  outline: 2px solid #fff;
+  outline-offset: -2px;
+}
+.jc-btn:active {
+  box-shadow:
+    inset 2px 3px 0 #4a4a4a,
+    inset -2px -2px 0 #a8a8a8;
+}
+.jc-btn[aria-disabled="true"],
+.jc-btn:disabled {
+  background: #2c2c2c;
+  color: #a0a0a0;
+  cursor: not-allowed;
+}
+.jc-btn.is-wide {
+  width: 100%;
+}
+
+/* ---------------------------------------------------------- overlay screens */
+.jc-screen {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  padding: 72px 12px 24px;
+  background: radial-gradient(ellipse at center, rgb(0 0 0 / 0.45), rgb(0 0 0 / 0.72));
+  overflow-y: auto;
+}
+.jc-screen-title {
+  font-size: 22px;
+  font-weight: 600;
+  text-align: center;
+  color: #fff;
+  text-shadow: 2px 2px 0 var(--jc-shadow);
+  margin-bottom: 14px;
+}
+
+/* ---------------------------------------------------------- tooltip */
+.jc-tooltip {
+  position: fixed;
+  z-index: 60;
+  max-width: 300px;
+  padding: 8px 10px;
+  background: rgb(16 0 16 / 0.94);
+  border: 2px solid transparent;
+  border-image: linear-gradient(#5000ff, #28007f) 1;
+  color: #fff;
+  font-size: 15px;
+  line-height: 1.35;
+  pointer-events: none;
+  text-shadow: 2px 2px 0 #3f3f3f;
+}
+.jc-tooltip .lore {
+  color: #aaaaaa;
+}
+.jc-tooltip .accent {
+  color: #55ffff;
+}
+.jc-tooltip .gold {
+  color: var(--jc-gold);
+}
+
+/* ---------------------------------------------------------- book */
+.jc-book {
+  background: #f4ebcf;
+  color: #2b2117;
+  border: 3px solid #5e4128;
+  box-shadow:
+    inset 0 0 0 3px #c9b98d,
+    0 10px 0 -3px #3d2a17;
+  border-radius: 4px;
+  font-size: 17px;
+  line-height: 1.45;
+}
+
+/* ---------------------------------------------------------- HUD */
+.jc-crosshair {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  pointer-events: none;
+  mix-blend-mode: difference;
+}
+.jc-crosshair::before,
+.jc-crosshair::after {
+  content: "";
+  position: absolute;
+  background: #fff;
+}
+.jc-crosshair::before {
+  left: 9px;
+  top: 0;
+  width: 2px;
+  height: 20px;
+}
+.jc-crosshair::after {
+  top: 9px;
+  left: 0;
+  height: 2px;
+  width: 20px;
+}
+.jc-hotbar {
+  display: flex;
+  padding: 2px;
+  background: rgb(0 0 0 / 0.55);
+  border: 2px solid #1a1a1a;
+  box-shadow: inset 0 0 0 2px #6b6b6b;
+}
+.jc-hotslot {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 2px solid transparent;
+}
+.jc-hotslot img {
+  width: 32px;
+  height: 32px;
+  image-rendering: pixelated;
+}
+.jc-hotslot.is-active {
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 2px #000;
+  z-index: 1;
+}
+.jc-xp {
+  height: 7px;
+  background: #1a1a1a;
+  border: 1px solid #000;
+}
+.jc-xp > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(#a6ff5c, #5ec21f);
+}
+.jc-level {
+  color: var(--jc-green);
+  font-weight: 700;
+  font-size: 18px;
+  text-shadow:
+    2px 0 0 #000,
+    -2px 0 0 #000,
+    0 2px 0 #000,
+    0 -2px 0 #000;
+}
+.jc-toast {
+  width: 290px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  background: #212121;
+  border: 2px solid #000;
+  box-shadow:
+    inset 2px 2px 0 #555,
+    inset -2px -2px 0 #111;
+  animation: jc-toast-in 220ms cubic-bezier(0.2, 0, 0, 1);
+}
+@keyframes jc-toast-in {
+  from {
+    transform: translateX(110%);
+  }
+}
+.jc-bossbar {
+  width: min(420px, 80vw);
+  height: 8px;
+  background: #2a0a33;
+  border: 1px solid #000;
+}
+.jc-bossbar > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(#e05cff, #9b1fd0);
+}
+.jc-f3 {
+  font-family: ui-monospace, "Geist Mono Variable", monospace;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.jc-f3 p {
+  width: fit-content;
+  background: rgb(80 80 80 / 0.55);
+  padding: 0 4px;
+}
+.jc-chatline {
+  width: fit-content;
+  max-width: min(560px, 90vw);
+  padding: 2px 6px;
+  background: rgb(0 0 0 / 0.45);
+  text-shadow: 2px 2px 0 #3f3f3f;
+}
+
+/* ---------------------------------------------------------- loading */
+.jc-dirt {
+  background-color: #3b2a1c;
+  background-image:
+    linear-gradient(rgb(0 0 0 / 0.55), rgb(0 0 0 / 0.55)),
+    repeating-conic-gradient(#5b4130 0 25%, #4a3424 0 50%);
+  background-size:
+    auto,
+    32px 32px;
+  image-rendering: pixelated;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jc-toast {
+    animation: none;
+  }
+}
+
+/* Phones: nine slots must fit in 360px. */
+@media (max-width: 440px) {
+  .jc-hotslot {
+    width: 36px;
+    height: 36px;
+  }
+  .jc-hotslot img {
+    width: 26px;
+    height: 26px;
+  }
+  .jc-slot {
+    width: 34px;
+    height: 34px;
+  }
+  .jc-slot img {
+    width: 24px;
+    height: 24px;
+  }
+}

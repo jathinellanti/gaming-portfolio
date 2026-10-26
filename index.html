@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ellanti Jathin · Software Developer</title>
+    <meta
+      name="description"
+      content="Portfolio and CV of Ellanti Jathin: Software Developer and Unity Certified User: Programmer. Projects, experience, skills, and three explorable 3D worlds."
+    />
+    <meta name="theme-color" content="#0c0b0a" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Ellanti Jathin · Software Developer" />
+    <meta property="og:description" content="Portfolio and CV of Ellanti Jathin, plus three explorable game worlds." />
+    <meta property="og:image" content="/og.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script>
+      // Apply the saved theme before first paint so there is no flash.
+      (function () {
+        var t = "dark";
+        try {
+          var s = JSON.parse(localStorage.getItem("jp.settings.v1") || "null");
+          if (s && s.data && (s.data.theme === "light" || s.data.theme === "dark")) t = s.data.theme;
+        } catch (e) {}
+        document.documentElement.dataset.theme = t;
+        document.documentElement.style.colorScheme = t;
+      })();
+    </script>
+  </head>
+  <body class="grain">
+    <div id="root"></div>
+    <noscript>
+      <p style="padding: 2rem; font-family: system-ui">
+        This portfolio needs JavaScript. Contact: jathinellanti@gmail.com · github.com/jathinellanti
+      </p>
+    </noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
