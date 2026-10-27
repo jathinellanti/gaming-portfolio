@@ -4,8 +4,11 @@ import * as THREE from "three";
 import { neonRuntime, useNeon } from "../store";
 import { stepWalker, EYE } from "./walker";
 import { BOUND, COLLIDERS, POIS } from "../world/city";
+import { PROP_COLLIDERS } from "../world/props";
+
+const SOLIDS = [...COLLIDERS, ...PROP_COLLIDERS];
 import { prefersReducedMotion } from "../../../platform/webgl";
-import { sfx } from "../../../platform/audio";
+import { advanceSteps, footstep, land, newStepState, sfx } from "../../../platform/audio";
 
 const INTERACT = 3.4;
 const DISCOVER = 14;
@@ -16,6 +19,7 @@ export function Player() {
   const reduce = useMemo(() => prefersReducedMotion(), []);
   const bob = useRef(0);
   const tick = useRef(0);
+  const steps = useRef(newStepState());
 
   useEffect(() => {
     neonRuntime.camera = camera;
@@ -63,8 +67,13 @@ export function Player() {
     const { forward, strafe } = playing ? input.axes() : { forward: 0, strafe: 0 };
     const sprint = playing && (input.has("ShiftLeft") || input.touchSprint);
     const before = rt.walker;
-    rt.walker = stepWalker(before, { forward, strafe, yaw: rt.yaw, sprint, jump: playing && (input.has("Space") || input.touchJump) }, dt, COLLIDERS, BOUND);
+    rt.walker = stepWalker(before, { forward, strafe, yaw: rt.yaw, sprint, jump: playing && (input.has("Space") || input.touchJump) }, dt, SOLIDS, BOUND);
     const moved = Math.hypot(rt.walker.x - before.x, rt.walker.z - before.z);
+    // Rain-soaked pavement underfoot everywhere in the Sprawl.
+    const ev = advanceSteps(steps.current, moved, rt.walker.onGround, rt.walker.vy > 0, dt, sprint ? 2.3 : 1.7);
+    if (ev.landed) land("wet", ev.landed);
+    else if (ev.step) footstep("wet", sprint ? 0.9 : 0.6);
+    if (ev.jumped) sfx("jump");
     if (rt.walker.onGround && moved > 0.001 && !reduce) bob.current += moved * 2.4;
 
     const bobY = reduce ? 0 : Math.sin(bob.current) * 0.045;

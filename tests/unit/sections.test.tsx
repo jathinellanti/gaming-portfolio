@@ -12,7 +12,8 @@ describe("education", () => {
   it("lists entries newest first with results and ranges", async () => {
     renderAt("/");
     const s = await section("education");
-    const titles = within(s).getAllByRole("heading", { level: 3 }).map((h) => h.textContent);
+    const history = within(s).getByRole("list", { name: "Education history" });
+    const titles = within(history).getAllByRole("heading", { level: 3 }).map((h) => h.textContent);
     expect(titles).toEqual(["B.Tech, Computer Science and Engineering", "Intermediate (BiPC)", "SSC (CBSE)"]);
     expect(s).toHaveTextContent("CGPA 9.02");
     expect(s).toHaveTextContent("89%");
@@ -76,7 +77,8 @@ describe("projects", () => {
     expect(within(s).getByRole("link", { name: "Weather Information System" })).toHaveAttribute("href", "/projects/weather-information-system");
     expect(within(s).getByRole("link", { name: "Employee Leave Management System" })).toHaveAttribute("href", "/projects/employee-leave-management");
     expect(s).toHaveTextContent("Team project (academic)");
-    expect(s).toHaveTextContent("Screenshots coming soon");
+    expect(s).toHaveTextContent("Illustration");
+    expect(s).not.toHaveTextContent("Real screenshots");
     expect(within(s).queryAllByRole("img")).toHaveLength(0);
   });
 

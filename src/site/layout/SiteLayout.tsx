@@ -4,6 +4,8 @@ import { Nav } from "./Nav";
 import { Footer } from "./Footer";
 import { RealmTransitionOverlay } from "../../play/RealmTransition";
 import { NoticeBanner } from "../components/NoticeBanner";
+import { Aurora } from "../components/Aurora";
+import { Intro } from "../components/Intro";
 
 // The palette (cmdk + Radix) loads on first use: Ctrl/⌘+K or the nav button.
 const Palette = lazy(() => import("../components/Palette").then((m) => ({ default: m.Palette })));
@@ -31,6 +33,7 @@ export function SiteLayout() {
 
   return (
     <>
+      <Aurora />
       <a
         href="#main"
         className="no-print fixed left-4 top-3 z-[90] -translate-y-16 rounded-md bg-primary px-3 py-2 text-sm font-medium text-on-primary transition-ui focus:translate-y-0"
@@ -49,6 +52,7 @@ export function SiteLayout() {
         </Suspense>
       )}
       <RealmTransitionOverlay />
+      <Intro />
     </>
   );
 }

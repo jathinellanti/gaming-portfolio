@@ -1,69 +1,55 @@
 import { Link } from "react-router";
-import { ArrowRight, ArrowUpRight, FolderGit2 } from "lucide-react";
+import { ArrowRight, ArrowUpRight, FolderGit2, Gamepad2 } from "lucide-react";
 import { useContent } from "../../content/useContent";
 import { skillById } from "../../content/model";
 import type { Project } from "../../content/schema";
 import { Section } from "../components/Section";
 import { Chip } from "../components/Chip";
 import { EmptyState } from "../components/EmptyState";
-import { StackMosaic } from "../components/StackMosaic";
+import { ProjectCover } from "../art/covers/ProjectCover";
 import { CONTEXT_LABEL } from "../evidence";
 import { formatMonth } from "../format";
+import { WORLDS } from "../../play/worlds";
 
-function ProjectVisual({ project }: { project: Project }) {
-  const img = project.images[0];
-  if (!img) return <StackMosaic project={project} />;
-  return (
-    <img
-      src={img.src}
-      alt={img.alt}
-      width={img.width}
-      height={img.height}
-      loading="lazy"
-      decoding="async"
-      className="aspect-[16/10] w-full rounded-[var(--radius-card)] border border-line object-cover"
-    />
-  );
-}
-
-function ProjectRow({ project, index }: { project: Project; index: number }) {
+// Featured work: one card per project (showcase art, context, summary, stack, links),
+// plus a card for the Realm, so the playable CV sits beside the real work.
+function ProjectCard({ project, index }: { project: Project; index: number }) {
   const content = useContent();
   const stack = project.tech.map((t) => skillById(content, t)).filter((s) => s !== undefined);
+  const shown = stack.slice(0, 5);
   return (
-    <li className="group grid items-center gap-8 border-t border-line py-10 first:border-t-0 lg:grid-cols-[1.05fr_1fr] lg:gap-14">
-      <Link to={`/projects/${project.slug}`} tabIndex={-1} aria-hidden className="block transition-ui group-hover:-translate-y-0.5">
-        <ProjectVisual project={project} />
+    <li className="group panel flex flex-col overflow-hidden transition-ui hover:-translate-y-1 hover:border-line-strong">
+      <Link to={`/projects/${project.slug}`} tabIndex={-1} aria-hidden className="block p-2 pb-0">
+        <ProjectCover project={project} />
       </Link>
-      <div>
-        <p className="eyebrow tabular">
-          <span className="text-primary-text">{String(index + 1).padStart(2, "0")}</span> · {formatMonth(project.start)}
+      <div className="flex flex-1 flex-col p-5 sm:p-6">
+        <p className="eyebrow tabular flex flex-wrap items-center gap-x-2">
+          <span className="text-primary-text">{String(index + 1).padStart(2, "0")}</span>
+          <span aria-hidden>·</span>
+          {formatMonth(project.start)}
+          <span aria-hidden>·</span>
+          {CONTEXT_LABEL[project.context]}
         </p>
-        <h3 className="text-display mt-3 text-[length:var(--step-3)] text-ink">
-          <Link to={`/projects/${project.slug}`} className="underline-offset-[6px] decoration-1 transition-ui hover:underline">
+        <h3 className="text-lux mt-3 text-[clamp(1.5rem,2.3vw,1.85rem)] leading-[1.1] text-ink">
+          <Link to={`/projects/${project.slug}`} className="transition-ui hover:text-primary-text">
             {project.title}
           </Link>
         </h3>
-        <div className="mt-3 flex flex-wrap gap-2">
-          <Chip tone="neutral">{CONTEXT_LABEL[project.context]}</Chip>
-          <Chip tone="neutral">{project.role}</Chip>
-        </div>
-        <p className="mt-4 max-w-[56ch] text-ink-dim">{project.summary}</p>
-        <ul className="mt-4 space-y-1.5 text-sm text-ink-dim">
-          {project.features.slice(0, 3).map((f) => (
-            <li key={f} className="flex gap-2">
-              <span aria-hidden className="mt-2 size-1 shrink-0 rounded-full bg-ink-faint" />
-              {f}
-            </li>
-          ))}
-        </ul>
-        <ul className="mt-5 flex flex-wrap gap-1.5" aria-label="Tech stack">
-          {stack.map((s) => (
+        <p className="mt-1 text-sm text-ink-faint">{project.role}</p>
+        <p className="mt-3 text-ink-dim">{project.summary}</p>
+        <ul className="mt-4 flex flex-wrap gap-1.5" aria-label="Tech stack">
+          {shown.map((s) => (
             <li key={s.id}>
               <Chip>{s.name}</Chip>
             </li>
           ))}
+          {stack.length > shown.length && (
+            <li>
+              <Chip tone="neutral">+{stack.length - shown.length}</Chip>
+            </li>
+          )}
         </ul>
-        <div className="mt-6 flex flex-wrap items-center gap-5 text-sm font-medium">
+        <div className="mt-auto flex flex-wrap items-center gap-x-5 gap-y-2 pt-6 text-sm font-medium">
           <Link to={`/projects/${project.slug}`} className="inline-flex items-center gap-1.5 text-ink underline-offset-4 transition-ui hover:text-primary-text hover:underline">
             Read the case study <ArrowRight size={15} aria-hidden />
           </Link>
@@ -85,17 +71,68 @@ function ProjectRow({ project, index }: { project: Project; index: number }) {
   );
 }
 
-export function Projects() {
-  const { projects } = useContent();
+function RealmCard() {
+  const playable = WORLDS.filter((w) => w.status === "available").length;
   return (
-    <Section id="projects" title="Selected projects" lead="Real repositories, described from their code.">
+    <li className="group panel relative flex flex-col overflow-hidden transition-ui hover:-translate-y-1 hover:border-primary">
+      <div aria-hidden className="grid aspect-[16/10] grid-cols-3 gap-1.5 p-2 pb-0">
+        {WORLDS.map((w) => (
+          <div key={w.id} className="overflow-hidden rounded-[12px]">
+            <img src={`/art/${w.card}-600.webp`} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.2,0,0,1)] group-hover:scale-[1.06]" />
+          </div>
+        ))}
+      </div>
+      <div className="flex flex-1 flex-col p-5 sm:p-6">
+        <p className="eyebrow flex items-center gap-2">
+          <Gamepad2 size={14} aria-hidden className="text-primary-text" />
+          {playable} of {WORLDS.length} worlds playable
+        </p>
+        <h3 className="text-lux mt-3 text-[clamp(1.5rem,2.3vw,1.85rem)] leading-[1.1] text-ink">
+          <Link to="/play" className="transition-ui hover:text-primary-text">
+            The Developer&apos;s Realm
+          </Link>
+        </h3>
+        <p className="mt-1 text-sm text-ink-faint">This portfolio, as games</p>
+        <p className="mt-3 text-ink-dim">The same CV as three explorable worlds: a block world, a neon megacity and a sunset open city.</p>
+        <ul className="mt-4 flex flex-wrap gap-1.5" aria-label="Worlds">
+          {WORLDS.map((w) => (
+            <li key={w.id}>
+              <Chip tone="neutral">{w.title}</Chip>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-auto pt-6 text-sm font-medium">
+          <Link to="/play" className="inline-flex items-center gap-1.5 text-ink underline-offset-4 transition-ui hover:text-primary-text hover:underline">
+            Choose a world <ArrowRight size={15} aria-hidden />
+          </Link>
+        </div>
+      </div>
+    </li>
+  );
+}
+
+export function Projects() {
+  const { projects, profile } = useContent();
+  return (
+    <Section
+      id="projects"
+      title="Featured work"
+      lead="Real repositories, described from their code."
+      action={
+        <a href={profile.links.github} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 font-medium text-ink-dim underline-offset-4 transition-ui hover:text-ink hover:underline">
+          All on GitHub <ArrowUpRight size={14} aria-hidden />
+          <span className="sr-only">(opens in a new tab)</span>
+        </a>
+      }
+    >
       {projects.length === 0 ? (
         <EmptyState icon={FolderGit2} title="No projects published yet" why="Projects appear here once they are added to src/content/data/projects.ts." />
       ) : (
-        <ol aria-label="Projects">
+        <ol aria-label="Projects" className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {projects.map((p, i) => (
-            <ProjectRow key={p.slug} project={p} index={i} />
+            <ProjectCard key={p.slug} project={p} index={i} />
           ))}
+          <RealmCard />
         </ol>
       )}
     </Section>

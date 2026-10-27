@@ -1,3 +1,7 @@
+@import "@fontsource/anton/latin-400.css";
+@import "@fontsource/allura/latin-400.css";
+@import "@fontsource-variable/playfair-display/wght.css";
+@import "@fontsource-variable/playfair-display/wght-italic.css";
 @import "@fontsource/instrument-serif/latin-400.css";
 @import "@fontsource/instrument-serif/latin-400-italic.css";
 @import "@fontsource-variable/geist/wght.css";
@@ -6,67 +10,110 @@
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
+/* Section mood tones (src/site/moods.ts writes them on <html>). Registered as colours
+   so the aurora cross-fades between sections instead of snapping. */
+@property --tone-a { syntax: "<color>"; inherits: true; initial-value: rgb(34 211 238); }
+@property --tone-b { syntax: "<color>"; inherits: true; initial-value: rgb(139 92 246); }
+@property --tone-c { syntax: "<color>"; inherits: true; initial-value: rgb(59 130 246); }
+
 /* ------------------------------------------------------------------------
    Design tokens (docs/UI_SPEC.md). Light and dark are designed together;
    contrast ratios for every text pair are recorded in UI_SPEC.md.
    No component may use a raw colour: extend these instead.
    ------------------------------------------------------------------------ */
+/* Palette: midnight navy, electric cyan primary, violet secondary.
+   Measured contrast is in docs/UI_SPEC.md; every text pair ≥ 5.0:1. */
 :root,
 [data-theme="dark"] {
-  --bg: #0c0b0a;
-  --surface-1: #141311;
-  --surface-2: #1b1917;
-  --surface-3: #24211e;
-  --border: rgb(255 240 222 / 0.09);
-  --border-strong: rgb(255 240 222 / 0.18);
-  --text: #f3eee7;
-  --text-dim: #aaa298;
-  --text-faint: #958d83;
-  --primary: #ff7a45;
-  --primary-hover: #ff8f63;
-  --on-primary: #1a0b04;
-  --primary-soft: rgb(255 122 69 / 0.12);
-  --primary-text: #ff9a70;
-  --success: #5fd49a;
-  --danger: #ff6b6b;
-  --warning: #f5c04e;
-  --focus: #ffb38f;
-  --spotlight: rgb(255 122 69 / 0.07);
-  --grain-opacity: 0.06;
-  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4), 0 1px 0 rgb(255 255 255 / 0.04) inset;
-  --shadow-2: 0 18px 40px -12px rgb(0 0 0 / 0.6), 0 1px 0 rgb(255 255 255 / 0.05) inset;
+  --bg: #060a18;
+  --surface-1: #0b1226;
+  --surface-2: #111a33;
+  --surface-3: #18233f;
+  --border: rgb(148 170 255 / 0.1);
+  --border-strong: rgb(148 170 255 / 0.2);
+  --text: #e8ecff;
+  --text-dim: #a7b0d4;
+  --text-faint: #8d97bf;
+  --primary: #22d3ee;
+  --primary-hover: #67e8f9;
+  --on-primary: #03141b;
+  --primary-soft: rgb(34 211 238 / 0.12);
+  --primary-text: #67e8f9;
+  --secondary: #8b5cf6;
+  --secondary-soft: rgb(139 92 246 / 0.16);
+  --secondary-text: #b9a2ff;
+  --success: #4ade80;
+  --danger: #fb7185;
+  --warning: #facc15;
+  --focus: #67e8f9;
+  --spotlight: rgb(139 92 246 / 0.12);
+  --aurora-a: color-mix(in srgb, var(--tone-a) 24%, transparent);
+  --aurora-b: color-mix(in srgb, var(--tone-b) 28%, transparent);
+  --aurora-c: color-mix(in srgb, var(--tone-c) 20%, transparent);
+  /* Brushed-chrome headline fill (with a solid fallback for contrast checks). */
+  --chrome: linear-gradient(180deg, #ffffff 0%, #e4e9f7 34%, #9aa3bd 52%, #f4f6ff 70%, #c3cae0 100%);
+  --chrome-solid: #e8ecff;
+  /* Platinum: the monogram, the intro and its accents (the site's metal is silver). */
+  --foil-1: #f6f8fc;
+  --foil-2: #c9cfdc;
+  --foil-3: #8e96a8;
+  --foil: linear-gradient(176deg, #ffffff 0%, #dfe4ee 38%, #9aa3b6 56%, #f1f4fa 74%, #b8bfcd 100%);
+  --foil-solid: #dfe4ee;
+  --mark-bg: var(--bg);
+  --panel: color-mix(in oklab, var(--surface-1) 82%, transparent);
+  --grain-opacity: 0.05;
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.45), 0 1px 0 rgb(255 255 255 / 0.04) inset;
+  --shadow-2: 0 24px 50px -18px rgb(0 0 0 / 0.7), 0 1px 0 rgb(255 255 255 / 0.05) inset;
   color-scheme: dark;
 }
 
 [data-theme="light"] {
-  --bg: #f6f2ec;
-  --surface-1: #fffdfa;
-  --surface-2: #efe9e1;
-  --surface-3: #e6dfd5;
-  --border: rgb(40 25 10 / 0.1);
-  --border-strong: rgb(40 25 10 / 0.2);
-  --text: #1b1815;
-  --text-dim: #574f47;
-  --text-faint: #655d55;
-  --primary: #c2410c;
-  --primary-hover: #a8380a;
-  --on-primary: #fffaf5;
-  --primary-soft: rgb(194 65 12 / 0.1);
-  --primary-text: #a3370a;
+  --bg: #f5f7ff;
+  --surface-1: #ffffff;
+  --surface-2: #eef1fb;
+  --surface-3: #e3e8f7;
+  --border: rgb(30 40 90 / 0.1);
+  --border-strong: rgb(30 40 90 / 0.2);
+  --text: #0b1030;
+  --text-dim: #434a6e;
+  --text-faint: #555d82;
+  --primary: #0e7490;
+  --primary-hover: #155e75;
+  --on-primary: #ffffff;
+  --primary-soft: rgb(14 116 144 / 0.1);
+  --primary-text: #0b6a84;
+  --secondary: #6d28d9;
+  --secondary-soft: rgb(109 40 217 / 0.1);
+  --secondary-text: #6527c9;
   --success: #15803d;
-  --danger: #c62828;
+  --danger: #be123c;
   --warning: #a16207;
-  --focus: #c2410c;
-  --spotlight: rgb(194 65 12 / 0.06);
-  --grain-opacity: 0.04;
-  --shadow-1: 0 1px 2px rgb(60 40 20 / 0.08), 0 1px 0 rgb(255 255 255 / 0.7) inset;
-  --shadow-2: 0 18px 40px -16px rgb(60 40 20 / 0.22), 0 1px 0 rgb(255 255 255 / 0.8) inset;
+  --focus: #6d28d9;
+  --spotlight: rgb(109 40 217 / 0.08);
+  --aurora-a: color-mix(in srgb, var(--tone-a) 16%, transparent);
+  --aurora-b: color-mix(in srgb, var(--tone-b) 16%, transparent);
+  --aurora-c: color-mix(in srgb, var(--tone-c) 12%, transparent);
+  --chrome: linear-gradient(180deg, #2a3358 0%, #0b1030 45%, #3d476d 62%, #0b1030 100%);
+  --chrome-solid: #0b1030;
+  --foil-1: #6f7789;
+  --foil-2: #454c5e;
+  --foil-3: #262b38;
+  --foil: linear-gradient(176deg, #5c6476 0%, #2c3242 45%, #6a7285 70%, #262b38 100%);
+  --foil-solid: #2c3242;
+  --mark-bg: var(--bg);
+  --panel: color-mix(in oklab, var(--surface-1) 90%, transparent);
+  --grain-opacity: 0.035;
+  --shadow-1: 0 1px 2px rgb(20 30 80 / 0.08), 0 1px 0 rgb(255 255 255 / 0.8) inset;
+  --shadow-2: 0 24px 50px -20px rgb(20 30 80 / 0.25), 0 1px 0 rgb(255 255 255 / 0.9) inset;
   color-scheme: light;
 }
 
 :root {
   /* Type */
   --font-display-family: "Instrument Serif", ui-serif, Georgia, serif;
+  --font-condensed-family: "Anton", "Impact", "Arial Narrow Bold", sans-serif;
+  --font-lux-family: "Playfair Display Variable", "Playfair Display", ui-serif, Georgia, serif;
+  --font-script-family: "Allura", "Snell Roundhand", cursive;
   --font-body-family: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
   --font-mono-family: "Geist Mono Variable", ui-monospace, "SFMono-Regular", monospace;
   --step--1: clamp(0.78rem, 0.76rem + 0.1vw, 0.84rem);
@@ -119,11 +166,17 @@
   --color-on-primary: var(--on-primary);
   --color-primary-soft: var(--primary-soft);
   --color-primary-text: var(--primary-text);
+  --color-secondary: var(--secondary);
+  --color-secondary-soft: var(--secondary-soft);
+  --color-secondary-text: var(--secondary-text);
   --color-success: var(--success);
   --color-danger: var(--danger);
   --color-warning: var(--warning);
   --color-focus: var(--focus);
   --font-display: var(--font-display-family);
+  --font-condensed: var(--font-condensed-family);
+  --font-lux: var(--font-lux-family);
+  --font-script: var(--font-script-family);
   --font-sans: var(--font-body-family);
   --font-mono: var(--font-mono-family);
   --radius-card: var(--radius-card);
@@ -145,7 +198,8 @@
   }
   body {
     min-height: 100dvh;
-    background: var(--bg);
+    /* Transparent so the fixed aurora layer (z < 0) shows; <html> carries --bg. */
+    background: transparent;
     font-size: var(--step-0);
     line-height: 1.6;
     overflow-x: clip;
@@ -194,6 +248,53 @@
   line-height: 1;
 }
 
+/* Giant condensed uppercase headlines (hero name, section titles, banners). */
+@utility text-condensed {
+  font-family: var(--font-condensed-family);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.005em;
+  line-height: 0.88;
+}
+
+/* Elegant serif headlines (sections, cards, stats). */
+@utility text-lux {
+  font-family: var(--font-lux-family);
+  font-weight: 420;
+  letter-spacing: -0.018em;
+  line-height: 1.04;
+}
+
+/* Platinum fill (accents). */
+@utility text-foil {
+  color: var(--foil-solid);
+  background: var(--foil);
+  background-size: 100% 1lh;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Brushed-chrome fill for headlines. Solid colour when printing. */
+@utility text-chrome {
+  color: var(--chrome-solid);
+  background: var(--chrome);
+  /* One sweep per line, so every line of a wrapped headline gets the full shine. */
+  background-size: 100% 1lh;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* The shared card surface: tinted, hairline border, top highlight. No backdrop blur
+   (blur on large layers costs most of the frame budget on low-end GPUs). */
+@utility panel {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--panel);
+  box-shadow: var(--shadow-1);
+}
+
 @utility eyebrow {
   font-family: var(--font-mono-family);
   font-size: var(--step--1);
@@ -223,39 +324,6 @@
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
 }
 
-/* ------------------------------------------------------------------------ Illustration motion
-   Slow, ambient, and fully disabled under prefers-reduced-motion (global rule above). */
-@keyframes art-float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-7px);
-  }
-}
-@keyframes art-rain {
-  from {
-    transform: translateY(-40px);
-  }
-  to {
-    transform: translateY(40px);
-  }
-}
-@keyframes art-blink {
-  0%,
-  60%,
-  100% {
-    opacity: 1;
-  }
-  70%,
-  90% {
-    opacity: 0.15;
-  }
-}
-.art-float {
-  animation: art-float 7s ease-in-out infinite;
-}
 @keyframes realm-drift {
   0%,
   100% {
@@ -276,30 +344,252 @@
   top: -20%;
   width: 60vw;
   height: 60vw;
-  background: rgb(255 122 69 / 0.13);
+  background: rgb(139 92 246 / 0.16);
 }
 .realm-fog-b {
   right: -15%;
   bottom: -25%;
   width: 55vw;
   height: 55vw;
-  background: rgb(62 240 255 / 0.08);
+  background: rgb(34 211 238 / 0.1);
   animation-delay: -11s;
 }
-.art-float-b {
-  animation-delay: -2.3s;
-  animation-duration: 8s;
+
+/* ------------------------------------------------------------------------ Living background */
+@keyframes aurora-drift-a {
+  0%, 100% { transform: translate3d(-10%, -6%, 0) scale(1); }
+  50% { transform: translate3d(12%, 8%, 0) scale(1.15); }
 }
-.art-float-c {
-  animation-delay: -4.6s;
-  animation-duration: 9s;
+@keyframes aurora-drift-b {
+  0%, 100% { transform: translate3d(8%, 4%, 0) scale(1.1); }
+  50% { transform: translate3d(-14%, -10%, 0) scale(0.95); }
 }
-.art-rain {
-  animation: art-rain 0.9s linear infinite;
+@keyframes aurora-drift-c {
+  0%, 100% { transform: translate3d(0, 10%, 0) scale(0.9); }
+  50% { transform: translate3d(6%, -12%, 0) scale(1.2); }
 }
-.art-blink {
-  animation: art-blink 2.4s steps(1, end) infinite;
+@keyframes star-twinkle {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 0.9; }
 }
+html {
+  transition:
+    --tone-a 1400ms var(--ease),
+    --tone-b 1400ms var(--ease),
+    --tone-c 1400ms var(--ease);
+}
+/* The blobs are soft radial gradients, not blurred shapes: blur(90px) on three
+   viewport-sized animated layers cost ~5x the frame time (measured 4–6 fps vs
+   24–43 fps in software rendering) for no visible gain. */
+.aurora-blob {
+  position: absolute;
+  border-radius: 9999px;
+  will-change: transform;
+}
+.aurora-a {
+  left: -15vw;
+  top: -20vh;
+  width: 70vw;
+  height: 70vw;
+  background: radial-gradient(closest-side, var(--aurora-a), color-mix(in srgb, var(--aurora-a) 45%, transparent) 45%, transparent);
+  animation: aurora-drift-a 26s ease-in-out infinite;
+}
+.aurora-b {
+  right: -20vw;
+  top: 10vh;
+  width: 65vw;
+  height: 65vw;
+  background: radial-gradient(closest-side, var(--aurora-b), color-mix(in srgb, var(--aurora-b) 45%, transparent) 45%, transparent);
+  animation: aurora-drift-b 32s ease-in-out infinite;
+}
+.aurora-c {
+  left: 20vw;
+  bottom: -35vh;
+  width: 75vw;
+  height: 75vw;
+  background: radial-gradient(closest-side, var(--aurora-c), color-mix(in srgb, var(--aurora-c) 45%, transparent) 45%, transparent);
+  animation: aurora-drift-c 38s ease-in-out infinite;
+}
+.aurora-stars {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 12% 18%, rgb(255 255 255 / 0.55), transparent 60%),
+    radial-gradient(1px 1px at 72% 12%, rgb(255 255 255 / 0.45), transparent 60%),
+    radial-gradient(1.5px 1.5px at 38% 62%, rgb(165 243 252 / 0.55), transparent 60%),
+    radial-gradient(1px 1px at 88% 48%, rgb(255 255 255 / 0.4), transparent 60%),
+    radial-gradient(1px 1px at 55% 85%, rgb(196 181 253 / 0.5), transparent 60%),
+    radial-gradient(1.5px 1.5px at 22% 78%, rgb(255 255 255 / 0.35), transparent 60%);
+  background-size: 640px 640px;
+  animation: star-twinkle 6s ease-in-out infinite;
+}
+[data-theme="light"] .aurora-stars {
+  display: none;
+}
+
+/* Scroll reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 600ms var(--ease),
+    transform 600ms var(--ease);
+}
+.reveal.is-shown {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media print {
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .aurora {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------------------------ Monogram draw-in */
+@keyframes mark-draw { to { stroke-dashoffset: 0; } }
+@keyframes mark-letters {
+  from { opacity: 0; transform: scale(1.08); filter: blur(5px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+@keyframes mark-word {
+  from { opacity: 0; letter-spacing: 1.1em; }
+  to { opacity: 1; }
+}
+.mark-animate .mark-frame {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: mark-draw 1.5s cubic-bezier(0.65, 0, 0.35, 1) 0.2s forwards;
+}
+.mark-animate .mark-frame-inner { animation-delay: 0.45s; }
+.mark-animate .mark-letters {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: mark-letters 1.1s var(--ease) 0.9s forwards;
+}
+.mark-animate ~ .mark-word,
+.mark-word:has(~ .mark-animate) {
+  opacity: 0;
+  animation: mark-word 1.4s var(--ease) 1.3s forwards;
+}
+
+/* ------------------------------------------------------------------------ Typed text caret */
+@keyframes caret-blink { 50% { opacity: 0; } }
+@keyframes caret-out { to { opacity: 0; } }
+/* Zero layout width: the bar is drawn by ::after, so the caret never changes where
+   the typed line wraps (the finished text must wrap exactly like its reserved copy). */
+.type-caret {
+  position: relative;
+  display: inline-block;
+  width: 0;
+  height: 0.72em;
+  vertical-align: -0.02em;
+}
+.type-caret::after {
+  content: "";
+  position: absolute;
+  left: 0.08em;
+  top: 0;
+  bottom: 0;
+  width: max(2px, 0.045em);
+  border-radius: 2px;
+  background: var(--chrome-solid);
+  animation: caret-blink 1s steps(1) infinite;
+}
+.type-caret.is-done::after { animation: caret-blink 1s steps(1) 3, caret-out 400ms var(--ease) 3s forwards; }
+@media (prefers-reduced-motion: reduce) {
+  .type-caret { display: none; }
+}
+
+/* ------------------------------------------------------------------------ Intro */
+@keyframes mote-float {
+  0% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(14px, -38px, 0); }
+  100% { transform: translate3d(-6px, -76px, 0); opacity: 0; }
+}
+@keyframes intro-fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+.intro {
+  transition:
+    opacity 900ms var(--ease),
+    filter 900ms var(--ease);
+}
+.intro-glow {
+  position: absolute;
+  left: 50%;
+  bottom: -38vh;
+  width: 140vw;
+  height: 70vh;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--foil-2) 26%, transparent), color-mix(in oklab, var(--secondary) 16%, transparent) 55%, transparent);
+}
+.intro-mote {
+  position: absolute;
+  border-radius: 9999px;
+  background: var(--foil-1);
+  box-shadow: 0 0 6px var(--foil-2);
+  animation: mote-float linear infinite;
+}
+.intro-tag { opacity: 0; animation: intro-fade-up 900ms var(--ease) 2.1s forwards; }
+.intro-enter { opacity: 0; animation: intro-fade-up 900ms var(--ease) 2.5s forwards; }
+.intro-stage { transition: transform 950ms var(--ease), opacity 700ms var(--ease); }
+.intro.is-leaving { opacity: 0; filter: blur(6px); pointer-events: none; }
+.intro.is-leaving .intro-stage { transform: scale(1.18) translateY(-2%); opacity: 0; }
+
+/* ------------------------------------------------------------------------ Marquee band */
+@keyframes marquee {
+  to { transform: translate3d(-50%, 0, 0); }
+}
+.marquee-track {
+  animation: marquee 38s linear infinite;
+}
+
+/* ------------------------------------------------------------------------ Hero carousel */
+@keyframes hero-kenburns {
+  from { transform: scale(1.02) translate3d(0, 0, 0); }
+  to { transform: scale(1.1) translate3d(-1.6%, -1%, 0); }
+}
+@keyframes hero-progress {
+  from { width: 0; }
+  to { width: 100%; }
+}
+.hero-slide {
+  transform: scale(1.02);
+  will-change: opacity, transform;
+}
+.hero-slide.is-active {
+  animation: hero-kenburns 9s linear forwards;
+}
+.hero-progress {
+  animation: hero-progress 7s linear forwards;
+}
+
+/* ------------------------------------------------------------------------ Project cover illustrations */
+@keyframes cover-spin { to { transform: rotate(360deg); } }
+@keyframes cover-rain {
+  0% { transform: translateY(-3px); opacity: 0; }
+  30% { opacity: 1; }
+  100% { transform: translateY(6px); opacity: 0; }
+}
+@keyframes showcase-pop { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.07); } }
+@keyframes cover-drift { 0%, 100% { transform: translateX(-18px); } 50% { transform: translateX(22px); } }
+.cover-spin { animation: cover-spin 40s linear infinite; }
+.cover-rain { animation: cover-rain 1.1s ease-in infinite; }
+.showcase-pop { animation: showcase-pop 2.4s ease-in-out infinite; }
+.cover-drift-a { animation: cover-drift 16s ease-in-out infinite; }
 
 /* ------------------------------------------------------------------------ Print (/cv) */
 @media print {

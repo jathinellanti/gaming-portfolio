@@ -41,7 +41,7 @@ export function Nav({ onOpenPalette }: { onOpenPalette(): void }) {
       <div className="mx-auto flex h-full max-w-[1200px] items-center gap-4 px-4 sm:px-6 lg:px-8">
         <Link to="/" className="flex items-center gap-3 rounded-md transition-ui hover:opacity-90" aria-label={`${profile.name}, home`}>
           <Monogram size={34} />
-          <span className="hidden text-sm font-medium text-ink sm:inline">{profile.name}</span>
+          <span className="font-lux hidden text-[13px] uppercase tracking-[0.3em] text-ink sm:inline">{profile.name}</span>
         </Link>
 
         <nav aria-label="Primary" className="mx-auto hidden lg:block">

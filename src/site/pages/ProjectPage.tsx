@@ -5,7 +5,8 @@ import { skillById } from "../../content/model";
 import { PageMeta } from "../meta";
 import { ButtonA } from "../components/Button";
 import { Chip } from "../components/Chip";
-import { StackMosaic } from "../components/StackMosaic";
+import { ProjectCover } from "../art/covers/ProjectCover";
+import { BrowserFrame } from "../art/covers/BrowserFrame";
 import { BRANDS, BrandIcon } from "../components/BrandIcon";
 import { CONTEXT_LABEL } from "../evidence";
 import { formatRange } from "../format";
@@ -67,21 +68,30 @@ export function ProjectPage() {
         </dl>
       </header>
 
-      <div className="mt-14">
-        {project.images.length > 0 ? (
-          <ul className="grid gap-4 md:grid-cols-2">
-            {project.images.map((img) => (
+      <div className="mx-auto mt-14 max-w-[960px]">
+        <ProjectCover project={project} />
+      </div>
+
+      {project.images.length > 0 && (
+        <section aria-labelledby="screens-heading" className="mt-16 grid gap-8 md:grid-cols-[200px_1fr]">
+          <h2 id="screens-heading" className="eyebrow">
+            Screens
+          </h2>
+          <ul className="grid gap-8 md:grid-cols-2">
+            {project.images.map((img, i) => (
               <li key={img.src}>
-                <img src={img.src} alt={img.alt} width={img.width} height={img.height} loading="lazy" decoding="async" className="w-full rounded-[var(--radius-card)] border border-line" />
+                <figure>
+                  <BrowserFrame image={img} />
+                  <figcaption className="mt-3 flex gap-3 text-sm text-ink-dim">
+                    <span className="font-mono text-xs tabular text-ink-faint">FIG {String(i + 1).padStart(2, "0")}</span>
+                    {img.caption ?? img.alt}
+                  </figcaption>
+                </figure>
               </li>
             ))}
           </ul>
-        ) : (
-          <div className="mx-auto max-w-[720px]">
-            <StackMosaic project={project} />
-          </div>
-        )}
-      </div>
+        </section>
+      )}
 
       <div className="mt-16 grid gap-12 md:grid-cols-[200px_1fr] md:gap-8">
         <p className="eyebrow">Overview</p>

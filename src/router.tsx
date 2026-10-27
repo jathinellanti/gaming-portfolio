@@ -38,6 +38,11 @@ export const routes: RouteObject[] = [
         HydrateFallback: RealmLoading,
         lazy: async () => ({ Component: (await import("./games/neon")).NeonRoute }),
       },
+      {
+        path: "play/city",
+        HydrateFallback: RealmLoading,
+        lazy: async () => ({ Component: (await import("./games/city")).CityRoute }),
+      },
     ],
   },
 ];

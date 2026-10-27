@@ -1,5 +1,5 @@
 import "./ui/neon.css";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { ArrowUp, Gauge, Hand, Menu, ScanLine } from "lucide-react";
 import { useContent } from "../../content/useContent";
@@ -9,15 +9,17 @@ import { Ground } from "./world/Ground";
 import { Storefronts } from "./world/Storefronts";
 import { Rain, SkyAndFog, Traffic } from "./world/Atmosphere";
 import { Effects } from "./world/Effects";
+import { StreetLife } from "./world/StreetLife";
 import { Player } from "./player/Player";
 import { Hud } from "./ui/Hud";
 import { Hub } from "./ui/Hub";
 import { Exit, HoloCall, Pause, Settings } from "./ui/Menus";
 import { poiById } from "./world/city";
 import { ExitBar } from "../../platform/ExitBar";
-import { TouchControls } from "../../platform/TouchControls";
+import { TouchControls, type TouchAction } from "../../platform/TouchControls";
 import { tryPointerLock } from "../../platform/fpsInput";
 import { raise } from "../../platform/faults";
+import { sfx, useWorldAudio } from "../../platform/audio";
 import { PageMeta } from "../../site/meta";
 
 const HUB_KEYS: Record<string, HubTab> = { KeyJ: "jobs", KeyC: "character", KeyP: "perks", KeyM: "map" };
@@ -70,14 +72,28 @@ export function NeonGame() {
     if (!touch && useNeon.getState().screen === null) tryPointerLock(wrap.current?.querySelector("canvas"));
   }, [touch]);
 
-  useEffect(() => {
+  // Cleared in a layout cleanup (the commit that removes the canvas), not a passive one,
+  // so a context the browser reclaims while the next page paints is not reported.
+  useLayoutEffect(() => {
     mounted.current = true;
-    const detach = neonRuntime.input.attach(window);
     return () => {
       mounted.current = false;
-      detach();
     };
   }, []);
+  useEffect(() => {
+    const detach = neonRuntime.input.attach(window);
+    return detach;
+  }, []);
+
+  // Rain, city hum, traffic and sirens, a slow synthwave loop; a blip as screens open and close.
+  useWorldAudio("neon");
+  useEffect(
+    () =>
+      useNeon.subscribe((s, prev) => {
+        if (s.screen !== prev.screen) sfx(s.screen ? "open" : "close");
+      }),
+    [],
+  );
 
   useEffect(() => {
     const onChange = () => {
@@ -140,12 +156,22 @@ export function NeonGame() {
     };
   }, []);
 
-  const touchActions = useMemo(
+  const touchActions = useMemo<TouchAction[]>(
     () => [
       { id: "jump", label: "Jump", icon: <ArrowUp size={20} aria-hidden />, onDown: () => (neonRuntime.input.touchJump = true), onUp: () => (neonRuntime.input.touchJump = false) },
       { id: "sprint", label: "Sprint", icon: <Gauge size={20} aria-hidden />, onDown: () => (neonRuntime.input.touchSprint = !neonRuntime.input.touchSprint) },
       { id: "use", label: "Enter location", icon: <Hand size={20} aria-hidden />, onDown: interact },
-      { id: "scan", label: "Scan", icon: <ScanLine size={20} aria-hidden />, onDown: () => neonRuntime.input.keys.add("KeyQ"), onUp: () => neonRuntime.input.keys.delete("KeyQ") },
+      {
+        id: "scan",
+        label: "Scan",
+        icon: <ScanLine size={20} aria-hidden />,
+        onDown: () => {
+          neonRuntime.input.keys.add("KeyQ");
+        },
+        onUp: () => {
+          neonRuntime.input.keys.delete("KeyQ");
+        },
+      },
       { id: "menu", label: "Menu", icon: <Menu size={20} aria-hidden />, onDown: () => useNeon.getState().open("pause") },
     ],
     [],
@@ -171,9 +197,10 @@ export function NeonGame() {
         }}
       >
         <SkyAndFog />
-        <Buildings />
+        <Buildings detail={quality === "low" ? "low" : "full"} />
         <Ground reflect={quality === "high"} />
         <Storefronts ads={ads} />
+        <StreetLife crowd={quality !== "low"} />
         <Rain count={quality === "low" ? 1200 : quality === "medium" ? 2600 : 3600} />
         <Traffic count={quality === "low" ? 14 : 26} />
         <Player />

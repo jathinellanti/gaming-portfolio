@@ -3,54 +3,106 @@ import * as THREE from "three";
 import { TOWERS, BOUND, type Tower } from "./city";
 
 // All towers merged into one geometry (one draw call). Facades share a procedural
-// window texture: `map` is the concrete + frames, `emissiveMap` the lit windows.
-// UVs are in world units (1 texture repeat = 40 m × 112 m), offset per tower.
+// texture: `map` is concrete, slabs, pilasters, glass and AC units; `emissiveMap`
+// the lit windows (interior falloff, blinds) and LED strips. UVs are in world units:
+// one repeat = 24 m x 48 m = 16 window bays x 12 floors (bays 1.5 m, floors 4 m),
+// so windows read at real scale instead of as glowing squares.
 
-const TEX_W = 40;
-const TEX_H = 112;
+const TEX_W = 24;
+const TEX_H = 48;
+const BAYS = 16;
+const FLOORS = 12;
 
-function facadeTextures(): { map: THREE.CanvasTexture; emissive: THREE.CanvasTexture } {
-  const S = 512;
-  const cols = 16;
-  const rows = 32;
+export function facadeTextures(detail: "low" | "full" = "full"): { map: THREE.CanvasTexture; emissive: THREE.CanvasTexture } {
+  const W = detail === "low" ? 512 : 1024;
+  const H = W * 2;
   const base = document.createElement("canvas");
   const glow = document.createElement("canvas");
-  base.width = glow.width = S;
-  base.height = glow.height = S;
+  base.width = glow.width = W;
+  base.height = glow.height = H;
   const b = base.getContext("2d")!;
   const g = glow.getContext("2d")!;
-  b.fillStyle = "#171a24";
-  b.fillRect(0, 0, S, S);
-  g.fillStyle = "#000";
-  g.fillRect(0, 0, S, S);
   let seed = 9001;
   const rand = () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296);
-  const cw = S / cols;
-  const rh = S / rows;
-  const lit = ["#ffcf8a", "#ffd9a8", "#9fd8ff", "#cfe9ff", "#ff7ad9", "#7affd4"];
-  for (let r = 0; r < rows; r++)
-    for (let c = 0; c < cols; c++) {
-      const x = c * cw + 3;
-      const y = r * rh + 3;
-      const w = cw - 6;
-      const h = rh - 6;
-      b.fillStyle = r < 2 ? "#12141c" : "#0b0d14";
+
+  // Concrete with a little grain.
+  b.fillStyle = "#14161d";
+  b.fillRect(0, 0, W, H);
+  for (let i = 0; i < W * 6; i++) {
+    b.fillStyle = rand() < 0.5 ? "rgba(255,255,255,0.035)" : "rgba(0,0,0,0.12)";
+    b.fillRect(rand() * W, rand() * H, 1 + rand() * 2, 1 + rand() * 2);
+  }
+  g.fillStyle = "#000";
+  g.fillRect(0, 0, W, H);
+
+  const bw = W / BAYS;
+  const fh = H / FLOORS;
+  const warm = ["#ffcf8a", "#ffd9a8", "#ffe2b8"];
+  const cool = ["#9fd8ff", "#cfe9ff", "#b7c8ff"];
+  const accent = ["#ff7ad9", "#7affd4", "#c59bff"];
+  const strips = ["#3ef0ff", "#ff3ea5", "#ffb547", "#b07cff"];
+
+  for (let f = 0; f < FLOORS; f++) {
+    const y0 = f * fh;
+    // Floor slab: a lighter concrete band with a crisp top edge.
+    b.fillStyle = "#1c1f28";
+    b.fillRect(0, y0 + fh * 0.86, W, fh * 0.14);
+    b.fillStyle = "#272b36";
+    b.fillRect(0, y0 + fh * 0.86, W, 2);
+    // The top floor of the texture stays plain: roofs sample its top-left corner.
+    if (f === 0) continue;
+    const officeFloor = rand() < 0.16; // a whole lit floor now and then
+    for (let c = 0; c < BAYS; c++) {
+      const x = c * bw + bw * 0.12;
+      const w = bw * 0.76;
+      const y = y0 + fh * 0.16;
+      const h = fh * 0.62;
+      const glass = b.createLinearGradient(0, y, 0, y + h);
+      glass.addColorStop(0, "#131a29");
+      glass.addColorStop(1, "#090c14");
+      b.fillStyle = glass;
       b.fillRect(x, y, w, h);
-      b.fillStyle = "#262a36";
-      b.fillRect(x - 3, y + h, w + 6, 2);
-      if (r < 2) continue; // top band stays dark: roofs map here
-      const band = Math.floor(r / 4) + Math.floor(c / 5);
-      const p = rand() < 0.36 + (band % 3 === 0 ? 0.18 : 0) ? 1 : 0;
-      if (p) {
-        const col = lit[Math.floor(rand() * rand() * lit.length)];
-        g.fillStyle = col;
+      b.fillStyle = "#20242f";
+      b.fillRect(x + w / 2 - 1, y, 2, h); // mullion
+      const lit = officeFloor ? rand() < 0.8 : rand() < 0.13;
+      if (lit) {
+        const pal = officeFloor ? cool : rand() < 0.75 ? warm : rand() < 0.7 ? cool : accent;
+        const col = pal[Math.floor(rand() * pal.length)];
+        const room = g.createLinearGradient(0, y, 0, y + h);
+        room.addColorStop(0, col + "70");
+        room.addColorStop(1, col + "ee");
+        g.fillStyle = room;
         g.globalAlpha = 0.55 + rand() * 0.45;
         g.fillRect(x, y, w, h);
         g.globalAlpha = 1;
-        b.fillStyle = "#2a2e3c";
+        if (rand() < 0.5) {
+          g.fillStyle = "rgba(0,0,0,0.38)"; // blinds
+          for (let k = y + 3; k < y + h * (0.3 + rand() * 0.7); k += 6) g.fillRect(x, k, w, 2);
+        }
+        b.fillStyle = "#283044";
         b.fillRect(x, y, w, h);
       }
+      if (rand() < 0.07) {
+        // An AC unit hanging under the window.
+        b.fillStyle = "#2c303b";
+        b.fillRect(x + w * 0.2, y + h + 3, w * 0.6, fh * 0.1);
+        b.fillStyle = "#1a1d25";
+        for (let k = 0; k < 3; k++) b.fillRect(x + w * 0.25, y + h + 6 + k * 4, w * 0.5, 1);
+      }
     }
+    // Some slabs carry a thin LED strip.
+    if (rand() < 0.2) {
+      g.fillStyle = strips[Math.floor(rand() * strips.length)];
+      const from = rand() < 0.5 ? 0 : Math.floor(rand() * BAYS) * bw;
+      g.fillRect(from, y0 + fh * 0.88, W - from, Math.max(2, fh * 0.018));
+    }
+  }
+  // Pilasters every four bays.
+  for (let c = 0; c <= BAYS; c += 4) {
+    b.fillStyle = "#0f1117";
+    b.fillRect(c * bw - bw * 0.08, fh, bw * 0.16, H - fh);
+  }
+
   const mk = (c: HTMLCanvasElement) => {
     const t = new THREE.CanvasTexture(c);
     t.wrapS = t.wrapT = THREE.RepeatWrapping;
@@ -129,14 +181,14 @@ function farTowers(): Tower[] {
 
 const NEON_EDGE = ["#3ef0ff", "#ff3ea5", "#f3e600", "#b07cff"];
 
-export function Buildings() {
+export function Buildings({ detail = "full" }: { detail?: "low" | "full" }) {
   const { geometry, far, material, edges, beacons } = useMemo(() => {
-    const { map, emissive } = facadeTextures();
+    const { map, emissive } = facadeTextures(detail);
     const material = new THREE.MeshStandardMaterial({
       map,
       emissiveMap: emissive,
       emissive: new THREE.Color("#ffffff"),
-      emissiveIntensity: 1.35,
+      emissiveIntensity: 1.05,
       vertexColors: true,
       roughness: 0.62,
       metalness: 0.35,
@@ -153,7 +205,7 @@ export function Buildings() {
       beacons.push([t.x, t.h + 1.5, t.z]);
     }
     return { geometry: mergedGeometry(TOWERS), far: mergedGeometry(farTowers()), material, edges, beacons };
-  }, []);
+  }, [detail]);
 
   return (
     <group>

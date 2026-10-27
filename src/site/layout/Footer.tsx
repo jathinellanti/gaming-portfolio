@@ -12,7 +12,7 @@ export function Footer() {
     <footer className="no-print border-t border-line">
       <div className="mx-auto flex max-w-[1200px] flex-col gap-8 px-4 py-12 sm:px-6 md:flex-row md:items-end md:justify-between lg:px-8">
         <div className="max-w-md">
-          <p className="text-display text-[length:var(--step-3)] text-ink">Prefer to play?</p>
+          <p className="text-lux text-chrome text-[clamp(2rem,4vw,2.75rem)] italic">Prefer to play?</p>
           <p className="mt-2 text-ink-dim">The same CV, told through three explorable game worlds.</p>
           <Button variant="secondary" size="md" className="mt-5" onClick={(e) => enterRealm("/play", e)}>
             <Gamepad2 size={16} aria-hidden />

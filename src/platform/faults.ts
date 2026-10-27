@@ -49,7 +49,12 @@ export const FAULTS = {
   "audio.blocked": {
     what: "Sound needs a click to start.",
     why: "Browsers block audio until you interact with the page.",
-    action: "Press the sound toggle (speaker icon) to start audio.",
+    action: "Click anywhere in the game, or press the speaker button in the top bar.",
+  },
+  "audio.unsupported": {
+    what: "Sound isn't available in this browser.",
+    why: "The browser has no Web Audio support, or refused to create an audio context.",
+    action: "Use a current Chrome, Edge, Firefox or Safari. The worlds still work without sound.",
   },
   "cv.missing": {
     what: "The PDF CV is unavailable.",

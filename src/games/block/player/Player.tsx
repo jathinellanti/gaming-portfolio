@@ -14,7 +14,8 @@ import { getAtlasTexture } from "../world/atlas";
 import { TILE_INDEX } from "../world/tiles";
 import { spawnBreakParticles } from "../world/Particles";
 import { prefersReducedMotion } from "../../../platform/webgl";
-import { sfx } from "../../../platform/audio";
+import { advanceSteps, footstep, land, newStepState, sfx } from "../../../platform/audio";
+import { surfaceFor } from "../audio";
 
 const REACH = 5;
 const PLAZA_SPAWN = REGIONS[0].spawn;
@@ -90,6 +91,7 @@ export function Player() {
   }, [hotbar, hand]);
 
   const state = useRef({ breakKey: "", crackStage: -1, regionTick: 0, inPortal: false, walkPhase: 0 });
+  const steps = useRef(newStepState());
 
   useFrame((_, dtRaw) => {
     const dt = Math.min(dtRaw, 0.1);
@@ -158,6 +160,19 @@ export function Player() {
     }
     const moved = Math.hypot(b.x - before.x, b.z - before.z);
     s.walkPhase += moved * 2.6;
+
+    // Footsteps, jumps and landings, by the block underfoot (swimming splashes).
+    if (!runtime.fly) {
+      const grounded = b.onGround || b.inWater;
+      const stride = b.inWater ? 1.4 : sprint ? 2.1 : sneak ? 1.1 : 1.6;
+      const ev = advanceSteps(steps.current, moved, grounded, b.vy > 0, dt, stride);
+      if (ev.step || ev.landed) {
+        const surface = b.inWater ? "water" : surfaceFor(world.getBlock(Math.floor(b.x), Math.floor(b.y - 0.05), Math.floor(b.z)));
+        if (ev.landed) land(surface, ev.landed);
+        else footstep(surface, sprint ? 0.9 : sneak ? 0.2 : 0.6);
+      }
+      if (ev.jumped && !b.inWater) sfx("jump");
+    }
 
     placeCamera(camera, hand, avatar, cameraMode, s.walkPhase, b.onGround && moved > 0.001 && !reduce);
 
@@ -256,7 +271,10 @@ export function Player() {
         }
       }
       const inPortal = inBox(Math.floor(b.x), Math.floor(b.y), Math.floor(b.z), PORTAL_BOX) || inBox(Math.floor(b.x), Math.floor(b.y + 1), Math.floor(b.z), PORTAL_BOX);
-      if (inPortal && !s.inPortal && playing) st.open("exit");
+      if (inPortal && !s.inPortal && playing) {
+        sfx("portal");
+        st.open("exit");
+      }
       s.inPortal = inPortal;
       const nearGuide = Math.hypot(b.x - GUIDE_POS[0], b.z - GUIDE_POS[2]) < 3 && Math.abs(b.y - GUIDE_POS[1]) < 2;
       if (nearGuide && playing) st.say("Press F to talk to the Guide", 400);

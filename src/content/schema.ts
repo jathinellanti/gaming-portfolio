@@ -69,6 +69,8 @@ export const imageSchema = z.object({
   alt: z.string().min(5),
   width: z.number().int().positive(),
   height: z.number().int().positive(),
+  /** Short visible caption; `alt` stays the full description. */
+  caption: z.string().min(3).optional(),
 });
 
 export const projectSchema = z.object({
@@ -205,6 +207,7 @@ export type Achievement = Content["achievements"][number];
 export type CaseStudy = Content["caseStudies"][number];
 export type SkillTreeNode = Content["skillTree"][number];
 export type EvidenceRef = z.infer<typeof evidenceRef>;
+export type ProjectImage = z.infer<typeof imageSchema>;
 
 export type ValidationResult = { ok: true; content: Content } | { ok: false; issues: string[] };
 

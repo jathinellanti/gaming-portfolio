@@ -1,4 +1,7 @@
 import { describe, it, expect } from "vitest";
+import { existsSync } from "node:fs";
+import { resolve } from "node:path";
+import sharp from "sharp";
 import { rawContent } from "../../src/content/data";
 import { validateContent, publicView, type Content } from "../../src/content/schema";
 import { StaticContentSource } from "../../src/content/source";
@@ -10,6 +13,17 @@ describe("real content", () => {
     const r = validateContent(rawContent);
     if (!r.ok) throw new Error(r.issues.join("\n"));
     expect(r.ok).toBe(true);
+  });
+
+  it("every project image exists in public/ at its declared size", async () => {
+    for (const p of rawContent.projects) {
+      for (const img of p.images) {
+        const file = resolve("public", img.src.slice(1));
+        expect(existsSync(file), img.src).toBe(true);
+        const meta = await sharp(file).metadata();
+        expect([meta.width, meta.height], img.src).toEqual([img.width, img.height]);
+      }
+    }
   });
 
   it("uses the exact certificate name and never the higher Unity certification", () => {

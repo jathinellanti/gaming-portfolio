@@ -65,6 +65,7 @@ export function Pause() {
 export function Settings() {
   const s = useNeon();
   const sound = useSettings((x) => x.sound);
+  const music = useSettings((x) => x.music);
   const setSettings = useSettings((x) => x.set);
   return (
     <div className="nc-screen" role="dialog" aria-modal="true" aria-labelledby="nc-settings">
@@ -104,8 +105,12 @@ export function Settings() {
             <input type="range" min={20} max={300} value={Math.round(s.sensitivity * 100)} onChange={(e) => s.setOption({ sensitivity: Number(e.target.value) / 100 })} />
           </label>
           <label className="flex items-center justify-between">
-            <span>Sound effects</span>
+            <span>Sound</span>
             <input type="checkbox" checked={sound} onChange={(e) => setSettings({ sound: e.target.checked })} />
+          </label>
+          <label className="flex items-center justify-between">
+            <span>Music</span>
+            <input type="checkbox" checked={music} disabled={!sound} onChange={(e) => setSettings({ music: e.target.checked })} />
           </label>
         </div>
       </div>

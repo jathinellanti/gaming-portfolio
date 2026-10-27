@@ -4,8 +4,6 @@ import * as m from "motion/react-m";
 import clsx from "clsx";
 import { ArrowLeft, FileText, Gamepad2, Hammer, Keyboard, Play, X } from "lucide-react";
 import { WORLDS, type World } from "./worlds";
-import { WorldVignette } from "../site/art/HeroPoster";
-import { WORLD_SCENE } from "../site/art/palette";
 import { ExitBar } from "../platform/ExitBar";
 import { useSettings } from "../platform/settings";
 import { PageMeta } from "../site/meta";
@@ -31,10 +29,19 @@ function WorldCard({ world, index }: { world: World; index: number }) {
         tabIndex={0}
         aria-labelledby={`${world.id}-title`}
         aria-describedby={`${world.id}-pitch`}
-        className="group flex h-full flex-col overflow-hidden rounded-[22px] border border-white/10 bg-[#121218] shadow-[0_30px_60px_-30px_rgb(0_0_0/0.8)] outline-none transition-ui hover:-translate-y-1 hover:border-white/25 focus-visible:-translate-y-1 focus-visible:border-[#ffb38f] focus-visible:ring-2 focus-visible:ring-[#ffb38f]/60"
+        className="group flex h-full flex-col overflow-hidden rounded-[22px] border border-white/10 bg-[#121218] shadow-[0_30px_60px_-30px_rgb(0_0_0/0.8)] outline-none transition-ui hover:-translate-y-1 hover:border-white/25 focus-visible:-translate-y-1 focus-visible:border-[#67e8f9] focus-visible:ring-2 focus-visible:ring-[#67e8f9]/60"
       >
-        <div className="relative h-[230px] overflow-hidden sm:h-[260px]" style={{ background: WORLD_SCENE[world.id] }}>
-          <WorldVignette world={world.id} className="absolute inset-0 m-auto h-[92%] w-[92%] transition-transform duration-[250ms] ease-[cubic-bezier(0.2,0,0,1)] group-hover:scale-[1.04]" />
+        <div className="relative h-[230px] overflow-hidden bg-[#0b1226] sm:h-[260px]">
+          <img
+            src={`/hero/${world.art}-960.webp`}
+            srcSet={`/hero/${world.art}-960.webp 960w, /hero/${world.art}-1600.webp 1600w`}
+            sizes="(min-width: 768px) 33vw, 100vw"
+            alt=""
+            loading="lazy"
+            decoding="async"
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-[600ms] ease-[cubic-bezier(0.2,0,0,1)] group-hover:scale-[1.06] group-focus-visible:scale-[1.06]"
+          />
+          <div aria-hidden className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#121218] to-transparent" />
           <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-black/60 px-2.5 py-1 font-mono text-[11px] uppercase tracking-wider text-white backdrop-blur">
             {available ? <Gamepad2 size={12} aria-hidden /> : <Hammer size={12} aria-hidden />}
             {available ? "Playable now" : "In development"}
@@ -53,7 +60,7 @@ function WorldCard({ world, index }: { world: World; index: number }) {
           <ul className="space-y-1.5 text-sm text-white/70">
             {world.cv.map((c) => (
               <li key={c} className="flex gap-2">
-                <span aria-hidden className="mt-2 size-1 shrink-0 rounded-full bg-[#ff7a45]" />
+                <span aria-hidden className="mt-2 size-1 shrink-0 rounded-full bg-[#8b5cf6]" />
                 {c}
               </li>
             ))}
@@ -67,7 +74,7 @@ function WorldCard({ world, index }: { world: World; index: number }) {
               <Link
                 to={`/play/${world.id}`}
                 aria-label={`Play ${world.title}`}
-                className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-[10px] bg-[#ff7a45] font-medium text-[#1a0b04] transition-ui hover:bg-[#ff8f63]"
+                className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-[10px] bg-[#22d3ee] font-medium text-[#03141b] transition-ui hover:bg-[#67e8f9]"
               >
                 <Play size={15} aria-hidden />
                 Play
@@ -114,7 +121,7 @@ export function WorldSelect() {
   };
 
   return (
-    <div data-theme="dark" className="relative min-h-dvh overflow-x-clip bg-[#07070b] text-white">
+    <div data-theme="dark" className="relative min-h-dvh overflow-x-clip bg-[#050816] text-white">
       <PageMeta title="The Developer's Realm" description="Choose a world: three explorable games that present Ellanti Jathin's CV, skills and projects." />
       <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="realm-fog realm-fog-a" />
@@ -126,7 +133,7 @@ export function WorldSelect() {
 
       <main className="relative mx-auto max-w-[1280px] px-4 pb-16 pt-20 sm:px-6 lg:px-8 lg:pt-14">
         <header className="max-w-2xl">
-          <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#ff9a70]">The Developer&apos;s Realm</p>
+          <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#67e8f9]">The Developer&apos;s Realm</p>
           <h1 className="text-display mt-4 text-[length:var(--step-4)] leading-[0.95]">Choose your world.</h1>
           <p className="mt-4 text-lg text-white/70">Three games, one CV. Each world tells the same real story (projects, skills, experience) through its own mechanics.</p>
         </header>

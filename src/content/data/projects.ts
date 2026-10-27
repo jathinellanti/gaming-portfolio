@@ -25,7 +25,24 @@ export const projects: Project[] = [
     start: "2024-01",
     tech: ["python", "django", "sqlite", "html", "css"],
     links: { repo: "https://github.com/jathinellanti/Weatherapp" },
-    images: [],
+    // Real screenshots: the repo's own templates and static files rendered for a
+    // plain GET request (no API call, so no weather readings are shown).
+    images: [
+      {
+        src: "/projects/weather-information-system/home-1440.webp",
+        alt: "Weather Forecaster home page: the title “Welcome to Weather Forecaster” and a Get Forecast button over a full-screen cloud video",
+        width: 1440,
+        height: 900,
+        caption: "Home page with a full-screen cloud video background",
+      },
+      {
+        src: "/projects/weather-information-system/forecast-1440.webp",
+        alt: "Weather Forecast page: a location search box above quick-link cards for Mumbai, Delhi, Bangalore and Kolkata, with empty current-weather and 5-day forecast panels",
+        width: 1440,
+        height: 900,
+        caption: "Forecast page: search any city, or jump to one of four",
+      },
+    ],
   },
   {
     slug: "employee-leave-management",

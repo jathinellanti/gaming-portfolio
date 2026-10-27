@@ -1,9 +1,9 @@
 import "./ui/gui.css";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { ArrowUp, Footprints, Hammer, Menu, Package, Pickaxe } from "lucide-react";
 import { useBlock, persistBlock } from "./store";
-import { runtime } from "./runtime";
+import { daylight, runtime } from "./runtime";
 import { WorldView } from "./world/WorldView";
 import { Signs } from "./world/Signs";
 import { Particles } from "./world/Particles";
@@ -16,9 +16,12 @@ import { GUIDE_POS } from "./world/structures";
 import { ExitBar } from "../../platform/ExitBar";
 import { TouchControls } from "../../platform/TouchControls";
 import { raise } from "../../platform/faults";
+import { sfx, useWorldAudio } from "../../platform/audio";
 import { PageMeta } from "../../site/meta";
 
 const TOGGLES: Record<string, "inventory" | "advancements" | "map"> = { KeyE: "inventory", KeyL: "advancements", KeyM: "map" };
+
+const worldDaylight = () => daylight(runtime.time);
 
 function nearGuide() {
   const b = runtime.body;
@@ -45,16 +48,33 @@ export function BlockGame() {
     }
   }, [touch]);
 
-  // Input listeners; `mounted` lets the context-loss handler ignore teardown.
+  // `mounted` lets the context-loss handler ignore teardown. It is cleared in a layout
+  // cleanup, which runs in the commit that removes the canvas, before the next page
+  // paints; a passive cleanup can run after that paint, when the browser may already
+  // have reclaimed the detached canvas's context.
   const mounted = useRef(true);
-  useEffect(() => {
+  useLayoutEffect(() => {
     mounted.current = true;
-    const detach = runtime.input.attach(window);
     return () => {
       mounted.current = false;
-      detach();
     };
   }, []);
+
+  // Input listeners
+  useEffect(() => {
+    const detach = runtime.input.attach(window);
+    return detach;
+  }, []);
+
+  // Wind, birds by day and crickets by night, sparse piano; a click as screens open and close.
+  useWorldAudio("block", worldDaylight);
+  useEffect(
+    () =>
+      useBlock.subscribe((s, prev) => {
+        if (s.screen !== prev.screen) sfx(s.screen ? "open" : "close");
+      }),
+    [],
+  );
 
   // Pointer lock state ↔ pause menu
   useEffect(() => {

@@ -84,6 +84,7 @@ export function PauseScreen() {
 export function OptionsScreen() {
   const s = useBlock();
   const sound = useSettings((x) => x.sound);
+  const music = useSettings((x) => x.music);
   const setSettings = useSettings((x) => x.set);
   const row = (label: string, value: string, input: React.ReactNode) => (
     <label className="grid gap-1">
@@ -102,8 +103,12 @@ export function OptionsScreen() {
         {row("Mouse sensitivity", `${Math.round(s.sensitivity * 100)}%`, <input type="range" min={20} max={300} value={Math.round(s.sensitivity * 100)} onChange={(e) => s.setOption({ sensitivity: Number(e.target.value) / 100 })} />)}
         {row("Day length", `${s.dayLengthMin} min`, <input type="range" min={2} max={60} value={s.dayLengthMin} onChange={(e) => s.setOption({ dayLengthMin: Number(e.target.value) })} />)}
         <label className="flex items-center justify-between text-[15px]">
-          <span>Sound effects</span>
+          <span>Sound</span>
           <input type="checkbox" checked={sound} onChange={(e) => setSettings({ sound: e.target.checked })} />
+        </label>
+        <label className="flex items-center justify-between text-[15px]">
+          <span>Music</span>
+          <input type="checkbox" checked={music} disabled={!sound} onChange={(e) => setSettings({ music: e.target.checked })} />
         </label>
         <p className="text-sm opacity-80">Lower the render distance if the game stutters. Motion effects follow your system's reduced-motion setting.</p>
       </div>

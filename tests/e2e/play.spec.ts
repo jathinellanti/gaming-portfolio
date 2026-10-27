@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures";
 
 for (const width of [360, 768, 1280, 1920]) {
   test(`World Select at ${width}px: three cards, Exit/CV always visible, no horizontal scroll`, async ({ page }) => {
@@ -14,17 +14,17 @@ for (const width of [360, 768, 1280, 1920]) {
   });
 }
 
-test("World Select keyboard navigation and disabled Play", async ({ page }) => {
+test("World Select keyboard navigation; every world links into its game", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/play#block");
   const cards = page.getByRole("list", { name: "Worlds" }).getByRole("article");
   await expect(cards.nth(0)).toBeFocused();
   await page.keyboard.press("ArrowRight");
   await expect(cards.nth(1)).toBeFocused();
-  const play = cards.nth(1).getByRole("button", { name: /play/i });
-  await expect(play).toHaveAttribute("aria-disabled", "true");
-  await play.click({ force: true });
-  await expect(page).toHaveURL(/\/play#block$/);
+  await expect(cards.nth(1).getByRole("link", { name: /play/i })).toHaveAttribute("href", "/play/neon");
+  await page.keyboard.press("ArrowRight");
+  await expect(cards.nth(2)).toBeFocused();
+  await expect(cards.nth(2).getByRole("link", { name: /play/i })).toHaveAttribute("href", "/play/city");
 });
 
 test("Exit returns to the professional site", async ({ page }) => {

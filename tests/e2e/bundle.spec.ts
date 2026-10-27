@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures";
 import { readFileSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { gzipSync } from "node:zlib";

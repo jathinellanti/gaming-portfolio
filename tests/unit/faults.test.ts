@@ -16,6 +16,7 @@ describe("fault registry", () => {
     expect(Object.keys(FAULTS).sort()).toEqual([
       "asset.load_failed",
       "audio.blocked",
+      "audio.unsupported",
       "chunk.load_failed",
       "content.invalid",
       "cv.missing",

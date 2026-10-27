@@ -2,7 +2,8 @@ import { describe, it, expect } from "vitest";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderAt } from "./render";
-import { POSTER_LABEL } from "../../src/site/art/HeroPoster";
+import { SLIDES } from "../../src/site/sections/HeroCarousel";
+import { WORLDS } from "../../src/play/worlds";
 
 describe("hero", () => {
   it("leads with name, title, certificate and intro", async () => {
@@ -10,9 +11,10 @@ describe("hero", () => {
     const h1 = await screen.findByRole("heading", { level: 1 });
     expect(h1).toHaveTextContent("Ellanti");
     expect(h1).toHaveTextContent("Jathin");
-    expect(screen.getByText("Software Developer")).toBeInTheDocument();
-    expect(screen.getAllByText("Unity Certified User: Programmer").length).toBeGreaterThan(0);
-    expect(screen.getByText(/CGPA 9\.02\)\. I build full-stack/)).toBeInTheDocument();
+    const hero = within(h1.closest("section")!);
+    expect(hero.getByText("Software Developer")).toBeInTheDocument();
+    expect(hero.getByText("Unity Certified User: Programmer")).toBeInTheDocument();
+    expect(hero.getByText(/CGPA 9\.02\)\. I build full-stack/)).toBeInTheDocument();
   });
 
   it("CTAs point to the CV page and the projects section", async () => {
@@ -28,14 +30,57 @@ describe("hero", () => {
     await waitFor(() => expect(router.state.location.pathname).toBe("/play"), { timeout: 2000 });
   });
 
-  it("each world shortcut opens World Select at that world", async () => {
-    const { router } = renderAt("/");
-    await userEvent.click(await screen.findByRole("button", { name: /neon city/i }));
-    await waitFor(() => expect(router.state.location.hash).toBe("#neon"), { timeout: 2000 });
+  it("the background carousel cycles Minecraft-style → GTA-style → Neon City, with tabs and a pause control", async () => {
+    renderAt("/");
+    const tabs = await screen.findByRole("tablist", { name: "Game worlds" });
+    const items = within(tabs).getAllByRole("tab");
+    expect(items.map((t) => t.getAttribute("aria-label"))).toEqual(SLIDES.map((s) => `Show ${s.name}`));
+    expect(SLIDES.map((s) => s.id)).toEqual(["block", "city", "neon"]);
+    expect(items[0]).toHaveAttribute("aria-selected", "true");
+    await userEvent.click(items[2]);
+    expect(items[2]).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByText(/Neon City ·/)).toBeInTheDocument();
+    const pause = screen.getByRole("button", { name: /pause slideshow|play slideshow/i });
+    const before = pause.getAttribute("aria-label");
+    await userEvent.click(pause);
+    expect(screen.getByRole("button", { name: /pause slideshow|play slideshow/i }).getAttribute("aria-label")).not.toBe(before);
   });
 
-  it("the poster is a described image", async () => {
+  it("'Play' enters a playable world, or its World Select card while it is in development", async () => {
+    const { router } = renderAt("/");
+    const tabs = await screen.findByRole("tablist", { name: "Game worlds" });
+    await userEvent.click(within(tabs).getAllByRole("tab")[0]);
+    await userEvent.click(screen.getByRole("button", { name: /play block world/i }));
+    await waitFor(() => expect(router.state.location.pathname).toBe("/play/block"), { timeout: 2000 });
+  });
+
+  it("Open City's Play goes straight into the game", async () => {
+    const { router } = renderAt("/");
+    const tabs = await screen.findByRole("tablist", { name: "Game worlds" });
+    await userEvent.click(within(tabs).getAllByRole("tab")[1]);
+    await userEvent.click(screen.getByRole("button", { name: /play open city/i }));
+    await waitFor(() => expect(router.state.location.pathname).toBe("/play/city"), { timeout: 2000 });
+  });
+
+  it("a world still in development opens its card on World Select instead", async () => {
+    const city = WORLDS.find((w) => w.id === "city")!;
+    const status = city.status;
+    city.status = "in-development";
+    try {
+      const { router } = renderAt("/");
+      const tabs = await screen.findByRole("tablist", { name: "Game worlds" });
+      await userEvent.click(within(tabs).getAllByRole("tab")[1]);
+      await userEvent.click(screen.getByRole("button", { name: /play open city/i }));
+      await waitFor(() => expect(router.state.location.hash).toBe("#city"), { timeout: 2000 });
+      expect(router.state.location.pathname).toBe("/play");
+    } finally {
+      city.status = status;
+    }
+  });
+
+  it("slide images are decorative (the art has no informational content)", async () => {
     renderAt("/");
-    expect(await screen.findByRole("img", { name: POSTER_LABEL })).toBeInTheDocument();
+    const hero = (await screen.findByRole("heading", { level: 1 })).closest("section")!;
+    for (const img of hero.querySelectorAll("img")) expect(img).toHaveAttribute("alt", "");
   });
 });

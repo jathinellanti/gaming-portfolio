@@ -1,7 +1,12 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect } from "./fixtures";
+import type { Page } from "@playwright/test";
 
 // Block World e2e against the production build (software WebGL in headless Chromium).
-test.describe.configure({ mode: "serial" });
+// Software rendering makes boot slow (~10–25 s here), and trace screenshots of a live
+// canvas on every action pushed tests past 30 s and hung teardown. Keep DOM traces for
+// failures, skip their screenshots, and allow 60 s.
+test.describe.configure({ mode: "serial", timeout: 60_000 });
+test.use({ trace: { mode: "retain-on-failure", screenshots: false, snapshots: { dom: true, screen: false } } });
 
 async function boot(page: Page, width = 1280, height = 800) {
   const errors: string[] = [];
@@ -36,6 +41,22 @@ test("boots, renders the world and keeps CV/Exit on screen", async ({ page }) =>
   await expect(bar.getByRole("link", { name: "CV" })).toBeVisible();
   await expect(bar.getByRole("link", { name: /exit to professional portfolio/i })).toBeVisible();
   await expect(page.getByText("Click to play")).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
+test("sound is on by default with a mute switch that sticks", async ({ page }) => {
+  const errors = await boot(page);
+  const bar = page.getByRole("navigation", { name: /leave the realm/i });
+  const mute = bar.getByRole("button", { name: "Mute sound" });
+  await expect(mute).toBeInViewport();
+  await expect(mute).toHaveAttribute("aria-pressed", "false");
+  await mute.click();
+  const unmute = bar.getByRole("button", { name: "Unmute sound" });
+  await expect(unmute).toHaveAttribute("aria-pressed", "true");
+  const stored = await page.evaluate(() => JSON.parse(localStorage.getItem("jp.settings.v1") ?? "{}"));
+  expect(stored).toMatchObject({ v: 2, data: { sound: false } });
+  await unmute.click();
+  await expect(bar.getByRole("button", { name: "Mute sound" })).toBeVisible();
   expect(errors).toEqual([]);
 });
 

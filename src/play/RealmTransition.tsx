@@ -4,7 +4,7 @@ import { AnimatePresence, useReducedMotion } from "motion/react";
 import * as m from "motion/react-m";
 import { create } from "zustand";
 
-// "Enter the Developer's Realm": a short ember bloom over the page, then navigation.
+// "Enter the Developer's Realm": a short bloom over the page, then navigation.
 // Reduced motion → navigate immediately. Never blocks access to anything.
 const TRANSITION_MS = 520;
 

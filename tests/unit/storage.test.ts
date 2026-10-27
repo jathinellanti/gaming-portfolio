@@ -34,6 +34,29 @@ describe("versionedStore", () => {
     expect(spy).toHaveBeenCalledWith("save.corrupt", expect.anything());
   });
 
+  it("migrates an older version when a migration is given, and saves the upgrade", () => {
+    const spy = vi.spyOn(faults, "raise");
+    localStorage.setItem("t", JSON.stringify({ v: 1, data: { n: 4 } }));
+    const migrate = vi.fn((from: number, data: unknown) => ({ n: (data as { n: number }).n * 10 + from }));
+    expect(versionedStore("t", 2, (r) => schema.parse(r), { n: 0 }, migrate).load()).toEqual({ n: 41 });
+    expect(migrate).toHaveBeenCalledWith(1, { n: 4 });
+    expect(JSON.parse(localStorage.getItem("t")!)).toEqual({ v: 2, data: { n: 41 } });
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it("a failing migration, or a newer stored version, still counts as save.corrupt", () => {
+    const spy = vi.spyOn(faults, "raise");
+    localStorage.setItem("t", JSON.stringify({ v: 1, data: { n: 4 } }));
+    const failing = () => {
+      throw new Error("no path");
+    };
+    expect(versionedStore("t", 2, (r) => schema.parse(r), { n: 0 }, failing).load()).toEqual({ n: 0 });
+    localStorage.setItem("t", JSON.stringify({ v: 3, data: { n: 4 } }));
+    expect(versionedStore("t", 2, (r) => schema.parse(r), { n: 0 }, () => ({ n: 7 })).load()).toEqual({ n: 0 });
+    expect(spy).toHaveBeenCalledTimes(2);
+    expect(spy).toHaveBeenCalledWith("save.corrupt", expect.anything());
+  });
+
   it("treats schema mismatch as save.corrupt", () => {
     localStorage.setItem("t", JSON.stringify({ v: 1, data: { n: "x" } }));
     expect(versionedStore("t", 1, (r) => schema.parse(r), { n: 0 }).load()).toEqual({ n: 0 });

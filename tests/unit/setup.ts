@@ -4,6 +4,10 @@ import { afterEach, beforeEach, vi } from "vitest";
 import { __resetCvProbe } from "../../src/site/useCv";
 import { useSettings, DEFAULT_SETTINGS } from "../../src/platform/settings";
 
+// The monogram intro is decided when src/site/intro.ts loads; tests start past it
+// (intro.test.tsx covers it on its own).
+sessionStorage.setItem("jp.intro.v1", "seen");
+
 // jsdom gaps the app relies on in real browsers.
 if (typeof window.matchMedia !== "function") {
   window.matchMedia = (query: string) =>

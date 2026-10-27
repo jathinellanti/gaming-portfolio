@@ -46,6 +46,25 @@ describe("/projects/:slug", () => {
     await waitFor(() => expect(document.title).toBe("Weather Information System · Ellanti Jathin"));
   });
 
+  it("shows the project's real screenshots in a captioned gallery; the cover is a labelled illustration", async () => {
+    renderAt("/projects/weather-information-system");
+    await screen.findByRole("heading", { level: 1 });
+    const screens = screen.getByRole("region", { name: "Screens" });
+    const figures = within(screens).getAllByRole("figure");
+    expect(figures).toHaveLength(2);
+    expect(within(figures[0]).getByRole("img")).toHaveAccessibleName(/Welcome to Weather Forecaster/);
+    expect(figures[0]).toHaveTextContent("FIG 01");
+    expect(figures[1]).toHaveTextContent("Forecast page: search any city, or jump to one of four");
+    expect(screen.getByText("Illustration")).toBeInTheDocument();
+  });
+
+  it("a project without screenshots shows a labelled illustration and no Screens gallery", async () => {
+    renderAt("/projects/employee-leave-management");
+    await screen.findByRole("heading", { level: 1 });
+    expect(screen.getByText("Illustration")).toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "Screens" })).toBeNull();
+  });
+
   it("claims nothing for a team project without a stated contribution", async () => {
     renderAt("/projects/employee-leave-management");
     await screen.findByRole("heading", { level: 1 });

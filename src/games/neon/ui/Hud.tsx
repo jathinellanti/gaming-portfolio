@@ -85,8 +85,10 @@ function ScanTags() {
         const visible = v.z < 1 && Math.abs(v.x) < 1.05 && Math.abs(v.y) < 1.05 && dist < 90;
         el.style.display = visible ? "block" : "none";
         if (visible) {
-          el.style.left = `${((v.x + 1) / 2) * window.innerWidth}px`;
-          el.style.top = `${((1 - v.y) / 2) * window.innerHeight}px`;
+          // Keep the whole tag on screen (it is centred on x and hangs above y).
+          const half = el.offsetWidth / 2 + 8;
+          el.style.left = `${Math.min(window.innerWidth - half, Math.max(half, ((v.x + 1) / 2) * window.innerWidth))}px`;
+          el.style.top = `${Math.max(el.offsetHeight + 8, ((1 - v.y) / 2) * window.innerHeight)}px`;
           (el.querySelector("[data-dist]") as HTMLElement).textContent = `${Math.round(dist)} M`;
         }
       });

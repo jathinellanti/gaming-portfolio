@@ -5,7 +5,10 @@ A professional CV site, plus **The Developer's Realm**: three explorable game wo
 > **Status:**
 > - Phase 1 (professional site + World Select) is complete.
 > - Phase 2 (**Block World / JATHINCRAFT**, `/play/block`) is complete and playable.
-> - Neon City and Open City (Phases 3–4) show as "In development" on World Select until they ship.
+> - Phase 3 (**Neon City / NEON//SPRAWL**, `/play/neon`) is playable: a first-person walk through a rain-soaked megacity with the CV as districts. Further visual work is still to come.
+> - Both playable worlds have synthesised sound: ambience, generative music, footsteps by surface and UI sounds, with a mute switch always on screen.
+> - Phase 4 (**Open City / SUNSET BAY**, `/play/city`) is playable: third person on foot or driving, traffic, CV sections as missions, phone and map.
+> - The professional site opens with an EJ monogram intro, then a luxury editorial layout: the name in script over the key-art carousel, Playfair headings, a stat strip, illustrated project cards, skills grid, world character cards and a contact banner over the cycling worlds. Project covers are labelled UI illustrations; the Weather case study keeps real screenshots, rendered from its own repository, in its gallery.
 
 ### Block World controls
 | Keys | Action |
