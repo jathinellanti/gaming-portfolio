@@ -40,7 +40,7 @@ The owner asked for continuous building without approval stops (2026-10-26). For
 | Owner ref "DIGITAL DESIGNER" | Featured work = equal cards (art on top, eyebrow, condensed title, summary, stack chips, links) + a Realm card. Skills = capabilities list beside a logo-tile grid. Education timeline beside a Certifications panel. Contact = full-width banner over the neon key art. |
 | Owner ref "PORTFOLIO" | About carries a numbered table of contents (links to every section) and a Realm card. |
 | Pinterest #30/#31 game sites | "Three worlds. One CV.": tall character cards cut from the key art (`tools/crop-art.mjs`), world glow colour on hover, status badge, Play. |
-| Pinterest (many) | A ticker band after the stats: title, certificate and evidenced skills in alternating solid/outlined condensed type; paused on hover, frozen under reduced motion. |
+| Pinterest (many) | A technology strip after the stats: every CV skill as logo + name, scrolling at a constant pace (it does not stop under the cursor, owner request 2026-10-27); still under reduced motion. |
 | (owner feedback) | The background should change colour down the page, like the hero carousel does. Here: each section has three tones; the aurora cross-fades to them as the section reaches mid-screen (`src/site/moods.ts`). |
 
 ## Picks (3 candidates each)
@@ -62,7 +62,7 @@ These are defined in `src/site/styles/index.css` and exposed to Tailwind via `@t
 - **Section tones (atmosphere only):** `MOODS` in `src/site/moods.ts` gives each section three tones (education amber/rose, experience sky/indigo, skills emerald/cyan, projects violet/fuchsia, certifications fuchsia/violet, contact indigo/cyan). They tint the aurora and the section photo only, never text or controls, so contrast doesn't depend on them.
 - **Section photos:** duotone (`mix-blend-mode: color`) toward the section's tones, masked top and bottom, faded under the text column, opacity 0.5 dark / 0.2 light, with scroll-linked parallax where `animation-timeline: view()` is supported.
 - **Type:**
-  - The name (hero): Great Vibes script in champagne foil (`font-script text-foil`). The owner asked for "stylish, not bold… cursive" (2026-10-27).
+  - The name (hero): Allura cursive in the site's silver chrome (`font-script` + `text-chrome` on the typed layer), typed out letter by letter with a caret (`TypedText`). The owner asked for "stylish, not bold… cursive", kept the original silver colour (not gold), and wanted the typing effect (2026-10-27). Generous padding keeps the swashes (the E) from being clipped.
   - Headings, stats, card titles, marquee: Playfair Display (`text-lux`), with the brushed-chrome fill on section titles (`text-chrome`; one gradient sweep per line via `background-size: 100% 1lh`).
   - The EJ monogram and wordmark: Playfair Display italic in foil (`components/Monogram.tsx`), after luxury two-letter monograms.
   - Anton (`text-condensed`) only on game-world cards, where a game feel is the point.

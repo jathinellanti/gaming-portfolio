@@ -10,7 +10,7 @@ Every asset this site uses is listed here: what it is, where it came from, and i
 | UI icons | [Lucide](https://lucide.dev) | ISC |
 | Anton (game titles) | [Fontsource](https://fontsource.org/fonts/anton) | SIL Open Font License 1.1 |
 | Playfair Display (headings, monogram) | [Fontsource](https://fontsource.org/fonts/playfair-display) | SIL Open Font License 1.1 |
-| Great Vibes (the name in the hero) | [Fontsource](https://fontsource.org/fonts/great-vibes) | SIL Open Font License 1.1 |
+| Allura (the name in the hero) | [Fontsource](https://fontsource.org/fonts/allura) | SIL Open Font License 1.1 |
 | Instrument Serif | [Fontsource](https://fontsource.org/fonts/instrument-serif) | SIL Open Font License 1.1 |
 | Geist, Geist Mono | [Fontsource](https://fontsource.org/fonts/geist) | SIL Open Font License 1.1 |
 | Pixelify Sans (Block World GUI) | [Fontsource](https://fontsource.org/fonts/pixelify-sans) | SIL Open Font License 1.1 |

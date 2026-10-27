@@ -38,6 +38,8 @@ test("boots with the HUD and the way out, gets into the red car, drives, and ope
 
 test("Esc opens a menu with every CV section as a mission card", async ({ page }) => {
   await page.goto("/play/city");
+  // The route is lazy: wait for the game itself before checking its loading overlay is gone.
+  await expect(page.locator(".ct-root canvas").first()).toBeVisible({ timeout: 30_000 });
   await expect(page.getByText("Loading the coast…")).toBeHidden({ timeout: 60_000 });
   await page.keyboard.press("Escape");
   await expect(page.getByRole("heading", { name: "Paused" })).toBeVisible();
